@@ -16,7 +16,7 @@ import threading
 BOT_TOKEN = "8805424592:AAHVjlM6tuZ7pDT-1bpZ7yZDjfSxnDlRQl0"
 WEBAPP_URL = "https://sanixunpopi-lab.github.io/mogcoin-doll1xx/"
 ADMIN_ID = 8698280423
-DATABASE_URL = os.environ.get("DATABASE_URL")
+DATABASE_URL = os.environ.get("postgresql://moguser:wuEUADWp4GMQLKwiDFgMTvMrUACDl4tl@dpg-dajgijbm8hqs73879jq0-a/mogcoin")
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=BOT_TOKEN)
