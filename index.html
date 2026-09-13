@@ -7,151 +7,516 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0a0a0f; color: #fff; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        #app { width: 100%; max-width: 420px; height: 100vh; max-height: 780px; background: radial-gradient(circle at 50% 0%, #1a0a2e 0%, #0a0a0f 70%); display: flex; flex-direction: column; padding: 20px; position: relative; }
-        
-        .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .balance-box { background: rgba(255,215,0,0.1); border: 2px solid rgba(255,215,0,0.3); border-radius: 20px; padding: 10px 20px; text-align: center; flex: 1; margin-right: 10px; }
-        .balance-label { font-size: 12px; color: #FFD700; text-transform: uppercase; letter-spacing: 1px; }
-        .balance-value { font-size: 28px; font-weight: 700; color: #FFD700; }
-        .energy-box { background: rgba(0,255,136,0.1); border: 2px solid rgba(0,255,136,0.3); border-radius: 20px; padding: 10px 20px; text-align: center; }
-        .energy-label { font-size: 12px; color: #00FF88; }
-        .energy-value { font-size: 20px; font-weight: 700; color: #00FF88; }
-        
-        .tap-area { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; }
-        #coin { width: 200px; height: 200px; border-radius: 50%; background: linear-gradient(135deg, #FFD700, #FFA500); display: flex; justify-content: center; align-items: center; font-size: 80px; cursor: pointer; transition: transform 0.1s; box-shadow: 0 0 60px rgba(255,215,0,0.5), 0 0 120px rgba(255,215,0,0.2); position: relative; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        #app {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            max-height: 780px;
+            background: radial-gradient(circle at 50% 0%, #1a0a2e 0%, #0a0a0f 70%);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
+            overflow-y: auto;
+        }
+        #app::-webkit-scrollbar { display: none; }
+
+        /* ===== ВЕРХ: БАЛАНС ===== */
+        .top {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .balance-box {
+            background: rgba(255,215,0,0.1);
+            border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 20px;
+            padding: 12px 30px;
+            text-align: center;
+        }
+        .balance-label { font-size: 11px; color: #FFD700; text-transform: uppercase; letter-spacing: 1.5px; }
+        .balance-value {
+            font-size: 26px;
+            font-weight: 700;
+            color: #FFD700;
+            word-break: break-all;
+            line-height: 1.2;
+        }
+
+        /* ===== КНОПКА ТАПА ===== */
+        .tap-area {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            min-height: 260px;
+        }
+        #coin {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 80px;
+            cursor: pointer;
+            transition: transform 0.08s;
+            box-shadow: 0 0 60px rgba(255,215,0,0.5), 0 0 120px rgba(255,215,0,0.2);
+            position: relative;
+        }
         #coin:active { transform: scale(0.9); }
-        #coin::before { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 4px solid rgba(255,255,255,0.2); }
-        
-        .tap-effect { position: absolute; font-size: 24px; font-weight: 700; color: #FFD700; pointer-events: none; animation: floatUp 0.8s ease-out forwards; }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
-        
-        .bottom { display: flex; gap: 10px; margin-top: 20px; }
-        .btn { flex: 1; padding: 15px; border: none; border-radius: 16px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .btn:active { transform: scale(0.95); }
-        .btn-primary { background: linear-gradient(135deg, #7B2FBE, #A855F7); color: #fff; }
-        .btn-secondary { background: #1a1a2e; color: #8A8A9A; border: 1px solid #2a2a3e; }
+        #coin::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,0.2);
+        }
+
+        .tap-effect {
+            position: fixed;
+            font-size: 20px;
+            font-weight: 700;
+            color: #FFD700;
+            pointer-events: none;
+            animation: floatUp 0.8s ease-out forwards;
+            z-index: 1000;
+        }
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-80px); }
+        }
+
+        /* ===== УЛУЧШЕНИЯ ===== */
+        .upgrades {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .upgrade-section {
+            background: #15151f;
+            border: 1px solid #2a2a3e;
+            border-radius: 16px;
+            padding: 14px;
+        }
+        .upgrade-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .upgrade-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #D0D0E0;
+        }
+        .upgrade-info {
+            font-size: 11px;
+            color: #8A8A9A;
+        }
+        .upgrade-info span { color: #00FF88; font-weight: 600; }
+
+        .upgrade-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .upgrade-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: #0a0a0f;
+            border: 1px solid #2a2a3e;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .upgrade-item:active { transform: scale(0.98); }
+        .upgrade-item.disabled { opacity: 0.4; cursor: not-allowed; }
+        .upgrade-item.bought { border-color: #00FF88; background: rgba(0,255,136,0.05); }
+
+        .upgrade-left { display: flex; flex-direction: column; gap: 2px; }
+        .upgrade-name { font-size: 13px; font-weight: 600; color: #D0D0E0; }
+        .upgrade-effect { font-size: 11px; color: #00FF88; }
+        .upgrade-right { text-align: right; }
+        .upgrade-cost { font-size: 13px; font-weight: 700; color: #FFD700; }
+        .upgrade-cost-label { font-size: 10px; color: #8A8A9A; }
+        .upgrade-item.bought .upgrade-cost { color: #00FF88; }
+
+        /* ===== ПОДСКАЗКА ===== */
+        .hint {
+            text-align: center;
+            font-size: 11px;
+            color: #5A5A6A;
+            padding: 10px 0 5px;
+        }
+
+        /* ===== POPUP РЕЗУЛЬТАТА ===== */
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: #15151f;
+            padding: 20px 30px;
+            border-radius: 16px;
+            border: 2px solid #7B2FBE;
+            box-shadow: 0 0 60px rgba(123, 47, 190, 0.5);
+            text-align: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+        .popup.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .popup-text { font-size: 14px; color: #D0D0E0; margin-bottom: 6px; }
+        .popup-amount { font-size: 22px; font-weight: 700; color: #00FF88; }
     </style>
 </head>
 <body>
     <div id="app">
+
+        <!-- БАЛАНС -->
         <div class="top">
             <div class="balance-box">
                 <div class="balance-label">Mog Coin</div>
-                <div class="balance-value" id="balance">0</div>
-            </div>
-            <div class="energy-box">
-                <div class="energy-label">⚡ Энергия</div>
-                <div class="energy-value"><span id="energy">1000</span></div>
+                <div class="balance-value" id="balance">0.000000</div>
             </div>
         </div>
-        
+
+        <!-- КНОПКА ТАПА -->
         <div class="tap-area" id="tapArea">
             <div id="coin">🐸</div>
         </div>
-        
-        <div class="bottom">
-            <button class="btn btn-primary" onclick="claimBonus()">🎁 Бонус</button>
-            <button class="btn btn-secondary" onclick="openRef()">👥 Друзья</button>
+
+        <!-- УЛУЧШЕНИЯ -->
+        <div class="upgrades">
+
+            <!-- Улучшение КЛИКА -->
+            <div class="upgrade-section">
+                <div class="upgrade-header">
+                    <div class="upgrade-title">👆 Улучшение клика</div>
+                    <div class="upgrade-info">Сейчас: <span id="clickValue">0.000001</span> MOG</div>
+                </div>
+                <div class="upgrade-list" id="clickUpgrades"></div>
+            </div>
+
+            <!-- Улучшение В СЕКУНДУ -->
+            <div class="upgrade-section">
+                <div class="upgrade-header">
+                    <div class="upgrade-title">⏱ Доход в секунду</div>
+                    <div class="upgrade-info">Сейчас: <span id="passiveValue">0.00000000</span> MOG/сек</div>
+                </div>
+                <div class="upgrade-list" id="passiveUpgrades"></div>
+            </div>
         </div>
+
+        <div class="hint">Тапай по жабе, покупай улучшения</div>
+    </div>
+
+    <!-- POPUP -->
+    <div class="popup" id="popup">
+        <div class="popup-text" id="popupText"></div>
+        <div class="popup-amount" id="popupAmount"></div>
     </div>
 
     <script>
+        // =============================================
+        // ===== НАСТРОЙКИ =====
+        // =============================================
+        const API_URL = 'https://mog-coin-bot.onrender.com'; // ЗАМЕНИ на свой URL Render
+        const MAX_TAPS_PER_HOUR = 15000;
+
+        // Начальные значения
+        const BASE_CLICK_VALUE = 0.000001;
+        const BASE_PASSIVE_VALUE = 0.00001;
+
+        // =============================================
+        // ===== TELEGRAM =====
+        // =============================================
         const tg = window.Telegram.WebApp;
         tg.expand();
         tg.ready();
-        
-        let user = tg.initDataUnsafe?.user || { id: 123456, first_name: 'Player' };
+
+        const user = tg.initDataUnsafe?.user || { id: 123456, first_name: 'Player' };
+
+        // =============================================
+        // ===== СОСТОЯНИЕ ИГРЫ =====
+        // =============================================
         let balance = 0;
-        let energy = 1000;
-        const MAX_ENERGY = 1000;
-        const ENERGY_PER_TAP = 1;
-        const COINS_PER_TAP = 1;
-        const ENERGY_REGEN = 2; // в секунду
-        
-        const coin = document.getElementById('coin');
-        const balanceEl = document.getElementById('balance');
-        const energyEl = document.getElementById('energy');
-        const tapArea = document.getElementById('tapArea');
-        
-        // Загружаем баланс с сервера (если есть)
-        async function loadBalance() {
-            try {
-                const resp = await fetch(`https://mog-coin-bot.onrender.com/balance/${user.id}`);
-                const data = await resp.json();
-                if (data.balance !== undefined) {
-                    balance = data.balance;
-                    balanceEl.textContent = balance;
-                }
-            } catch(e) { console.log('Сервер недоступен'); }
+        let clickValue = BASE_CLICK_VALUE;
+        let passiveValue = 0;
+
+        // Магазин улучшений клика
+        // Каждое улучшение повышает clickValue на своё значение
+        // Цена растёт на 50% после каждой покупки
+        const clickUpgrades = [
+            { id: 'c1', name: '+0.000001', add: 0.000001, basePrice: 0.00001, priceMultiplier: 1.5, bought: 0 },
+            { id: 'c2', name: '+0.00001',  add: 0.00001,  basePrice: 0.0005,  priceMultiplier: 1.5, bought: 0 },
+            { id: 'c3', name: '+0.0001',   add: 0.0001,   basePrice: 0.005,   priceMultiplier: 1.5, bought: 0 },
+            { id: 'c4', name: '+0.0005',   add: 0.0005,   basePrice: 0.025,   priceMultiplier: 1.5, bought: 0 },
+        ];
+
+        // Магазин улучшений в секунду
+        const passiveUpgrades = [
+            { id: 'p1', name: '+0.00001', add: 0.00001, basePrice: 0.01,  priceMultiplier: 1.5, bought: 0 },
+            { id: 'p2', name: '+0.0001',  add: 0.0001,  basePrice: 0.1,   priceMultiplier: 1.5, bought: 0 },
+            { id: 'p3', name: '+0.001',   add: 0.001,   basePrice: 1,     priceMultiplier: 1.5, bought: 0 },
+            { id: 'p4', name: '+0.001',   add: 0.001,   basePrice: 1,     priceMultiplier: 1.5, bought: 0 },
+        ];
+
+        // =============================================
+        // ===== СКРЫТЫЙ ЛИМИТ ТАПОВ =====
+        // =============================================
+        let tapCount = 0;                    // текущее кол-во тапов
+        let tapResetTime = Date.now() + 3600000;  // время сброса (1 час)
+        let limitReached = false;            // флаг достижения лимита
+
+        function checkTapLimit() {
+            const now = Date.now();
+            if (now >= tapResetTime) {
+                // Час прошёл — сброс
+                tapCount = 0;
+                tapResetTime = now + 3600000;
+                limitReached = false;
+            }
+            if (tapCount >= MAX_TAPS_PER_HOUR) {
+                limitReached = true;
+            }
         }
-        
-        // Тап
+
+        // =============================================
+        // ===== ФОРМАТИРОВАНИЕ =====
+        // =============================================
+        function formatBalance(val) {
+            return val.toFixed(6);
+        }
+        function formatSmall(val) {
+            // Для очень маленьких значений
+            if (val < 0.0001) return val.toFixed(8);
+            return val.toFixed(6);
+        }
+
+        // =============================================
+        // ===== UI ЭЛЕМЕНТЫ =====
+        // =============================================
+        const balanceEl = document.getElementById('balance');
+        const clickValueEl = document.getElementById('clickValue');
+        const passiveValueEl = document.getElementById('passiveValue');
+        const coin = document.getElementById('coin');
+
+        // =============================================
+        // ===== СЕРВЕР: ЗАГРУЗКА И СОХРАНЕНИЕ =====
+        // =============================================
+        async function loadFromServer() {
+            try {
+                const resp = await fetch(`${API_URL}/balance/${user.id}`);
+                const data = await resp.json();
+                if (data && typeof data.balance === 'number') {
+                    balance = data.balance;
+                    // Загружаем улучшения
+                    if (data.clickValue) clickValue = data.clickValue;
+                    if (data.passiveValue) passiveValue = data.passiveValue;
+                    if (data.clickUpgrades) {
+                        data.clickUpgrades.forEach(u => {
+                            const item = clickUpgrades.find(x => x.id === u.id);
+                            if (item) item.bought = u.bought;
+                        });
+                    }
+                    if (data.passiveUpgrades) {
+                        data.passiveUpgrades.forEach(u => {
+                            const item = passiveUpgrades.find(x => x.id === u.id);
+                            if (item) item.bought = u.bought;
+                        });
+                    }
+                }
+            } catch (e) {
+                console.log('Сервер недоступен, работаем локально');
+            }
+            updateUI();
+        }
+
+        let saveTimeout = null;
+        function saveToServer() {
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(async () => {
+                try {
+                    await fetch(`${API_URL}/balance/${user.id}`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            balance: balance,
+                            clickValue: clickValue,
+                            passiveValue: passiveValue,
+                            clickUpgrades: clickUpgrades.map(u => ({ id: u.id, bought: u.bought })),
+                            passiveUpgrades: passiveUpgrades.map(u => ({ id: u.id, bought: u.bought }))
+                        })
+                    });
+                } catch (e) {}
+            }, 1000);
+        }
+
+        // =============================================
+        // ===== ТАП =====
+        // =============================================
         coin.addEventListener('click', (e) => {
-            if (energy < ENERGY_PER_TAP) return;
-            
-            energy -= ENERGY_PER_TAP;
-            balance += COINS_PER_TAP;
-            
-            balanceEl.textContent = balance;
-            energyEl.textContent = energy;
-            
+            checkTapLimit();
+            if (limitReached) {
+                // Игрок НЕ видит, что лимит достигнут — просто не засчитывается
+                return;
+            }
+
+            tapCount++;
+            balance += clickValue;
+
             // Эффект
             const effect = document.createElement('div');
             effect.className = 'tap-effect';
-            effect.textContent = '+' + COINS_PER_TAP;
+            effect.textContent = '+' + clickValue.toFixed(6);
             effect.style.left = (e.clientX - 20) + 'px';
             effect.style.top = (e.clientY - 20) + 'px';
-            effect.style.position = 'fixed';
             document.body.appendChild(effect);
             setTimeout(() => effect.remove(), 800);
-            
+
             // Вибрация
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-            
-            // Сохраняем на сервер (раз в 10 тапов)
-            if (balance % 10 === 0) saveBalance();
+
+            updateBalance();
+            saveToServer();
         });
-        
-        // Восстановление энергии
+
+        // =============================================
+        // ===== ПАССИВНЫЙ ДОХОД =====
+        // =============================================
         setInterval(() => {
-            if (energy < MAX_ENERGY) {
-                energy = Math.min(MAX_ENERGY, energy + ENERGY_REGEN);
-                energyEl.textContent = energy;
+            if (passiveValue > 0) {
+                balance += passiveValue;
+                updateBalance();
+                saveToServer();
             }
         }, 1000);
-        
-        // Сохранение на сервер
-        async function saveBalance() {
-            try {
-                await fetch(`https://mog-coin-bot.onrender.com/balance/${user.id}`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ balance: balance })
-                });
-            } catch(e) {}
+
+        // =============================================
+        // ===== ОБНОВЛЕНИЕ UI =====
+        // =============================================
+        function updateBalance() {
+            balanceEl.textContent = formatBalance(balance);
         }
-        
-        function claimBonus() {
-            if (balance >= 100) {
-                balance += 50;
-                balanceEl.textContent = balance;
-                tg.HapticFeedback?.notificationOccurred('success');
-                alert('🎁 +50 Mog Coin!');
-            } else {
-                alert('❌ Нужно минимум 100 Mog Coin для бонуса');
+
+        function updateUI() {
+            updateBalance();
+            clickValueEl.textContent = clickValue.toFixed(6);
+            passiveValueEl.textContent = passiveValue.toFixed(8);
+            renderClickUpgrades();
+            renderPassiveUpgrades();
+        }
+
+        // =============================================
+        // ===== РЕНДЕР УЛУЧШЕНИЙ =====
+        // =============================================
+        function getCurrentPrice(upgrade) {
+            return upgrade.basePrice * Math.pow(upgrade.priceMultiplier, upgrade.bought);
+        }
+
+        function renderClickUpgrades() {
+            const container = document.getElementById('clickUpgrades');
+            container.innerHTML = '';
+            clickUpgrades.forEach(u => {
+                const price = getCurrentPrice(u);
+                const canBuy = balance >= price;
+                const item = document.createElement('div');
+                item.className = 'upgrade-item' + (canBuy ? '' : ' disabled');
+                item.innerHTML = `
+                    <div class="upgrade-left">
+                        <div class="upgrade-name">${u.name} за тап</div>
+                        <div class="upgrade-effect">Куплено: ${u.bought}</div>
+                    </div>
+                    <div class="upgrade-right">
+                        <div class="upgrade-cost">${price.toFixed(8)}</div>
+                        <div class="upgrade-cost-label">MOG</div>
+                    </div>
+                `;
+                item.onclick = () => buyUpgrade('click', u.id);
+                container.appendChild(item);
+            });
+        }
+
+        function renderPassiveUpgrades() {
+            const container = document.getElementById('passiveUpgrades');
+            container.innerHTML = '';
+            passiveUpgrades.forEach(u => {
+                const price = getCurrentPrice(u);
+                const canBuy = balance >= price;
+                const item = document.createElement('div');
+                item.className = 'upgrade-item' + (canBuy ? '' : ' disabled');
+                item.innerHTML = `
+                    <div class="upgrade-left">
+                        <div class="upgrade-name">${u.name} в сек</div>
+                        <div class="upgrade-effect">Куплено: ${u.bought}</div>
+                    </div>
+                    <div class="upgrade-right">
+                        <div class="upgrade-cost">${price.toFixed(8)}</div>
+                        <div class="upgrade-cost-label">MOG</div>
+                    </div>
+                `;
+                item.onclick = () => buyUpgrade('passive', u.id);
+                container.appendChild(item);
+            });
+        }
+
+        // =============================================
+        // ===== ПОКУПКА УЛУЧШЕНИЙ =====
+        // =============================================
+        function buyUpgrade(type, id) {
+            const list = type === 'click' ? clickUpgrades : passiveUpgrades;
+            const upgrade = list.find(u => u.id === id);
+            if (!upgrade) return;
+
+            const price = getCurrentPrice(upgrade);
+            if (balance < price) {
+                tg.HapticFeedback?.notificationOccurred('error');
+                return;
             }
+
+            // Списываем
+            balance -= price;
+            upgrade.bought += 1;
+
+            // Применяем эффект
+            if (type === 'click') {
+                clickValue += upgrade.add;
+            } else {
+                passiveValue += upgrade.add;
+            }
+
+            tg.HapticFeedback?.notificationOccurred('success');
+            updateUI();
+            saveToServer();
         }
-        
-        function openRef() {
-            const link = `https://t.me/mogcoin_bot?start=ref_${user.id}`;
-            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=Играй в Mog Coin!`);
-        }
-        
-        // Сохраняем при закрытии
-        window.addEventListener('beforeunload', saveBalance);
-        
-        loadBalance();
+
+        // =============================================
+        // ===== СТАРТ =====
+        // =============================================
+        loadFromServer();
     </script>
 </body>
 </html>
