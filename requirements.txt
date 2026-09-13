@@ -1,3 +1,5 @@
 aiogram
 Flask
 Flask-CORS
+aiohttp
+asyncpg
