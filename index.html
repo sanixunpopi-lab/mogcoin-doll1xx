@@ -62,6 +62,15 @@
             line-height: 1.2;
             margin-top: 4px;
         }
+        .coin-level-name {
+            font-size: 11px;
+            color: #8A8A9A;
+            margin-top: 4px;
+        }
+        .coin-level-name span {
+            color: #FFD700;
+            font-weight: 600;
+        }
         .tap-area {
             display: flex;
             justify-content: center;
@@ -71,27 +80,33 @@
             min-height: 280px;
         }
         #coin {
-            width: 200px;
-            height: 200px;
+            width: 220px;
+            height: 220px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #FFD700, #FFA500);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 80px;
             cursor: pointer;
-            transition: transform 0.08s;
-            box-shadow: 0 0 60px rgba(255,215,0,0.5), 0 0 120px rgba(255,215,0,0.2);
+            transition: transform 0.08s, box-shadow 0.3s;
             position: relative;
+            overflow: hidden;
         }
         #coin:active { transform: scale(0.9); }
-        #coin::before {
-            content: '';
-            position: absolute;
+        #coin img {
             width: 100%;
             height: 100%;
+            object-fit: contain;
             border-radius: 50%;
-            border: 4px solid rgba(255,255,255,0.2);
+            pointer-events: none;
+        }
+        #coin.level-1 { box-shadow: 0 0 40px rgba(205,127,50,0.5), 0 0 80px rgba(205,127,50,0.2); }
+        #coin.level-2 { box-shadow: 0 0 40px rgba(192,192,192,0.5), 0 0 80px rgba(192,192,192,0.2); }
+        #coin.level-3 { box-shadow: 0 0 40px rgba(255,215,0,0.5), 0 0 80px rgba(255,215,0,0.2); }
+        #coin.level-4 { box-shadow: 0 0 50px rgba(0,255,136,0.5), 0 0 100px rgba(0,255,136,0.2); }
+        #coin.level-5 { box-shadow: 0 0 70px rgba(168,85,247,0.7), 0 0 140px rgba(168,85,247,0.4); animation: pulseGlow 2s infinite alternate; }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 70px rgba(168,85,247,0.7), 0 0 140px rgba(168,85,247,0.4); }
+            100% { box-shadow: 0 0 90px rgba(255,215,0,0.8), 0 0 180px rgba(168,85,247,0.5); }
         }
         .tap-effect {
             position: fixed;
@@ -442,139 +457,143 @@
                 <div class="balance-box">
                     <div class="balance-label">Mog Coin</div>
                     <div class="balance-value" id="balanceTap">0.000000</div>
+                    <div class="coin-level-name">
+                        Уровень: <span id="coinLevelName">Бронза</span>
+                    </div>
                 </div>
             </div>
             <div class="tap-area">
-                <div id="coin">🐸</div>
+                <div id="coin">
+                    <img src="coin1.jpg" alt="coin">
+                </div>
             </div>
-            <div class="hint">Тапай по жабе, покупай улучшения</div>
+            <div class="hint">Тапай по монете, покупай улучшения</div>
         </div>
-
-        <div id="screen-profile" class="screen">
-            <div class="screen-title">👤 Профиль</div>
-            <div class="profile-card">
-                <div class="profile-avatar" id="profileAvatar">🐸</div>
-                <div class="profile-name" id="profileName">Игрок</div>
-                <div class="profile-id" id="profileId">ID: 123456</div>
+    <div id="screen-profile" class="screen">
+        <div class="screen-title">👤 Профиль</div>
+        <div class="profile-card">
+            <div class="profile-avatar" id="profileAvatar">🐸</div>
+            <div class="profile-name" id="profileName">Игрок</div>
+            <div class="profile-id" id="profileId">ID: 123456</div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-label">Баланс</div>
+                <div class="stat-value" id="statBalance">0.000000</div>
             </div>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">💰</div>
-                    <div class="stat-label">Баланс</div>
-                    <div class="stat-value" id="statBalance">0.000000</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">⏱</div>
-                    <div class="stat-label">В секунду</div>
-                    <div class="stat-value green" id="statPassive">0.00000000</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">👆</div>
-                    <div class="stat-label">За тап</div>
-                    <div class="stat-value purple" id="statClick">0.000001</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🎯</div>
-                    <div class="stat-label">Всего тапов</div>
-                    <div class="stat-value" id="statTaps">0</div>
-                </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏱</div>
+                <div class="stat-label">В секунду</div>
+                <div class="stat-value green" id="statPassive">0.00000000</div>
             </div>
-            <div class="section">
-                <div class="section-header">
-                    <div class="section-title">📊 Прогресс</div>
-                </div>
-                <div class="upgrade-item" style="cursor: default;">
-                    <div class="upgrade-left">
-                        <div class="upgrade-name">Уровень клика</div>
-                        <div class="upgrade-effect">Прокачан</div>
-                    </div>
-                    <div class="upgrade-right">
-                        <div class="upgrade-cost" id="statClickLevel">0</div>
-                    </div>
-                </div>
-                <div class="upgrade-item" style="cursor: default;">
-                    <div class="upgrade-left">
-                        <div class="upgrade-name">Уровень в секунду</div>
-                        <div class="upgrade-effect">Прокачан</div>
-                    </div>
-                    <div class="upgrade-right">
-                        <div class="upgrade-cost" id="statPassiveLevel">0</div>
-                    </div>
-                </div>
+            <div class="stat-card">
+                <div class="stat-icon">👆</div>
+                <div class="stat-label">За тап</div>
+                <div class="stat-value purple" id="statClick">0.000001</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-label">Всего тапов</div>
+                <div class="stat-value" id="statTaps">0</div>
             </div>
         </div>
-
-        <div id="screen-upgrades" class="screen">
-            <div class="screen-title">⚡ Улучшения</div>
-            <div class="top-balance">
-                <div class="balance-box">
-                    <div class="balance-label">Mog Coin</div>
-                    <div class="balance-value" id="balanceUpgrades">0.000000</div>
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">📊 Прогресс</div>
+            </div>
+            <div class="upgrade-item" style="cursor: default;">
+                <div class="upgrade-left">
+                    <div class="upgrade-name">Уровень клика</div>
+                    <div class="upgrade-effect">Прокачан</div>
+                </div>
+                <div class="upgrade-right">
+                    <div class="upgrade-cost" id="statClickLevel">0</div>
                 </div>
             </div>
-            <div class="section">
-                <div class="section-header">
-                    <div class="section-title">👆 Улучшение клика</div>
-                    <div class="section-info">Сейчас: <span id="clickValueInfo">0.000001</span></div>
+            <div class="upgrade-item" style="cursor: default;">
+                <div class="upgrade-left">
+                    <div class="upgrade-name">Уровень в секунду</div>
+                    <div class="upgrade-effect">Прокачан</div>
                 </div>
-                <div id="clickUpgradesList"></div>
-            </div>
-            <div class="section">
-                <div class="section-header">
-                    <div class="section-title">⏱ Доход в секунду</div>
-                    <div class="section-info">Сейчас: <span id="passiveValueInfo">0.00000000</span></div>
+                <div class="upgrade-right">
+                    <div class="upgrade-cost" id="statPassiveLevel">0</div>
                 </div>
-                <div id="passiveUpgradesList"></div>
             </div>
-        </div>
-
-        <div id="screen-games" class="screen">
-            <div class="screen-title">🎮 Игры</div>
-            <div class="game-card" data-game="crash">
-                <div class="game-icon">🚀</div>
-                <div class="game-title">Crash</div>
-                <div class="game-desc">Ставь Mog Coin, забирай выигрыш</div>
-                <div class="game-play">Играть</div>
-            </div>
-            <div class="game-card">
-                <div class="game-icon">🎡</div>
-                <div class="game-title">Wheel</div>
-                <div class="game-desc">Крути колесо и выигрывай</div>
-                <div class="game-soon">Скоро</div>
-            </div>
-            <div class="game-card">
-                <div class="game-icon">🎲</div>
-                <div class="game-title">Dice</div>
-                <div class="game-desc">Угадай число, умножь ставку</div>
-                <div class="game-soon">Скоро</div>
-            </div>
-        </div>
-
-        <div class="bottom-nav">
-            <button class="nav-btn active" data-screen="tap">
-                <span class="nav-icon">🐸</span>
-                <span>Игра</span>
-            </button>
-            <button class="nav-btn" data-screen="profile">
-                <span class="nav-icon">👤</span>
-                <span>Профиль</span>
-            </button>
-            <button class="nav-btn" data-screen="upgrades">
-                <span class="nav-icon">⚡</span>
-                <span>Улучшения</span>
-            </button>
-            <button class="nav-btn" data-screen="games">
-                <span class="nav-icon">🎮</span>
-                <span>Игры</span>
-            </button>
-        </div>
-
-        <div class="popup" id="popup">
-            <div class="popup-text" id="popupText"></div>
-            <div class="popup-amount" id="popupAmount"></div>
         </div>
     </div>
-    
+
+    <div id="screen-upgrades" class="screen">
+        <div class="screen-title">⚡ Улучшения</div>
+        <div class="top-balance">
+            <div class="balance-box">
+                <div class="balance-label">Mog Coin</div>
+                <div class="balance-value" id="balanceUpgrades">0.000000</div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">👆 Улучшение клика</div>
+                <div class="section-info">Сейчас: <span id="clickValueInfo">0.000001</span></div>
+            </div>
+            <div id="clickUpgradesList"></div>
+        </div>
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">⏱ Доход в секунду</div>
+                <div class="section-info">Сейчас: <span id="passiveValueInfo">0.00000000</span></div>
+            </div>
+            <div id="passiveUpgradesList"></div>
+        </div>
+    </div>
+
+    <div id="screen-games" class="screen">
+        <div class="screen-title">🎮 Игры</div>
+        <div class="game-card" data-game="crash">
+            <div class="game-icon">🚀</div>
+            <div class="game-title">Crash</div>
+            <div class="game-desc">Ставь Mog Coin, забирай выигрыш</div>
+            <div class="game-play">Играть</div>
+        </div>
+        <div class="game-card">
+            <div class="game-icon">🎡</div>
+            <div class="game-title">Wheel</div>
+            <div class="game-desc">Крути колесо и выигрывай</div>
+            <div class="game-soon">Скоро</div>
+        </div>
+        <div class="game-card">
+            <div class="game-icon">🎲</div>
+            <div class="game-title">Dice</div>
+            <div class="game-desc">Угадай число, умножь ставку</div>
+            <div class="game-soon">Скоро</div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-btn active" data-screen="tap">
+            <span class="nav-icon">🐸</span>
+            <span>Игра</span>
+        </button>
+        <button class="nav-btn" data-screen="profile">
+            <span class="nav-icon">👤</span>
+            <span>Профиль</span>
+        </button>
+        <button class="nav-btn" data-screen="upgrades">
+            <span class="nav-icon">⚡</span>
+            <span>Улучшения</span>
+        </button>
+        <button class="nav-btn" data-screen="games">
+            <span class="nav-icon">🎮</span>
+            <span>Игры</span>
+        </button>
+    </div>
+
+    <div class="popup" id="popup">
+        <div class="popup-text" id="popupText"></div>
+        <div class="popup-amount" id="popupAmount"></div>
+    </div>
+</div>
+
 <script>
     // =============================================
     // ===== НАСТРОЙКИ =====
@@ -582,18 +601,12 @@
     const MAX_TAPS_PER_HOUR = 15000;
     const BASE_CLICK_VALUE = 0.000001;
 
-    // =============================================
-    // ===== TELEGRAM =====
-    // =============================================
     const tg = window.Telegram.WebApp;
     tg.expand();
     tg.ready();
 
     const user = tg.initDataUnsafe?.user || { id: 123456, first_name: 'Player' };
 
-    // =============================================
-    // ===== СОСТОЯНИЕ ИГРЫ =====
-    // =============================================
     let balance = 0;
     let clickValue = BASE_CLICK_VALUE;
     let passiveValue = 0;
@@ -613,9 +626,6 @@
         { id: 'p4', name: '+0.001',   add: 0.001,   basePrice: 1,    mult: 1.5, bought: 0 },
     ];
 
-    // =============================================
-    // ===== СКРЫТЫЙ ЛИМИТ ТАПОВ =====
-    // =============================================
     let tapCount = 0;
     let tapResetTime = Date.now() + 3600000;
     let limitReached = false;
@@ -630,280 +640,194 @@
         if (tapCount >= MAX_TAPS_PER_HOUR) limitReached = true;
     }
 
-    // =============================================
-    // ===== UI ЭЛЕМЕНТЫ =====
-    // =============================================
-    const balanceTapEl = document.getElementById('balanceTap');
-    const balanceUpgradesEl = document.getElementById('balanceUpgrades');
-    const clickValueInfoEl = document.getElementById('clickValueInfo');
-    const passiveValueInfoEl = document.getElementById('passiveValueInfo');
     const coin = document.getElementById('coin');
 
-    // =============================================
-    // ===== LOCALSTORAGE (СОХРАНЕНИЕ) =====
-    // =============================================
     function getLocalData() {
         try {
-            const data = localStorage.getItem('mog_coin_' + user.id);
-            return data ? JSON.parse(data) : null;
+            const d = localStorage.getItem('mog_coin_' + user.id);
+            return d ? JSON.parse(d) : null;
         } catch (e) { return null; }
     }
 
     function saveLocalData() {
         try {
             localStorage.setItem('mog_coin_' + user.id, JSON.stringify({
-                balance: balance,
-                clickValue: clickValue,
-                passiveValue: passiveValue,
-                totalTaps: totalTaps,
+                balance, clickValue, passiveValue, totalTaps,
                 clickUpgrades: clickUpgrades.map(u => ({ id: u.id, bought: u.bought })),
                 passiveUpgrades: passiveUpgrades.map(u => ({ id: u.id, bought: u.bought }))
             }));
         } catch (e) {}
     }
-
-    function loadFromLocal() {
-        const data = getLocalData();
-        if (data) {
-            balance = data.balance || 0;
-            clickValue = data.clickValue || BASE_CLICK_VALUE;
-            passiveValue = data.passiveValue || 0;
-            totalTaps = data.totalTaps || 0;
-            if (data.clickUpgrades) {
-                data.clickUpgrades.forEach(u => {
-                    const item = clickUpgrades.find(x => x.id === u.id);
-                    if (item) item.bought = u.bought;
-                });
+            function loadFromLocal() {
+            const data = getLocalData();
+            if (data) {
+                balance = data.balance || 0;
+                clickValue = data.clickValue || BASE_CLICK_VALUE;
+                passiveValue = data.passiveValue || 0;
+                totalTaps = data.totalTaps || 0;
+                if (data.clickUpgrades) data.clickUpgrades.forEach(u => { const i = clickUpgrades.find(x => x.id === u.id); if (i) i.bought = u.bought; });
+                if (data.passiveUpgrades) data.passiveUpgrades.forEach(u => { const i = passiveUpgrades.find(x => x.id === u.id); if (i) i.bought = u.bought; });
             }
-            if (data.passiveUpgrades) {
-                data.passiveUpgrades.forEach(u => {
-                    const item = passiveUpgrades.find(x => x.id === u.id);
-                    if (item) item.bought = u.bought;
-                });
+        }
+
+        function formatBalance(v) {
+            if (v === 0) return '0.000000';
+            if (v < 0.001) return v.toFixed(8);
+            if (v < 1) return v.toFixed(6);
+            if (v < 1000) return v.toFixed(4);
+            return v.toFixed(2);
+        }
+
+        coin.addEventListener('click', (e) => {
+            checkTapLimit();
+            if (limitReached) return;
+            tapCount++; totalTaps++; balance += clickValue;
+            const ef = document.createElement('div');
+            ef.className = 'tap-effect';
+            ef.textContent = '+' + clickValue.toFixed(6);
+            ef.style.left = (e.clientX - 20) + 'px';
+            ef.style.top = (e.clientY - 20) + 'px';
+            document.body.appendChild(ef);
+            setTimeout(() => ef.remove(), 800);
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+            updateAllUI(); saveLocalData();
+        });
+
+        setInterval(() => {
+            if (passiveValue > 0) { balance += passiveValue; updateAllUI(); saveLocalData(); }
+        }, 1000);
+
+        function updateAllUI() {
+            document.getElementById('balanceTap').textContent = formatBalance(balance);
+            document.getElementById('balanceUpgrades').textContent = formatBalance(balance);
+            document.getElementById('statBalance').textContent = formatBalance(balance);
+            document.getElementById('statPassive').textContent = passiveValue.toFixed(8);
+            document.getElementById('statClick').textContent = clickValue.toFixed(6);
+            document.getElementById('statTaps').textContent = totalTaps.toLocaleString();
+            document.getElementById('statClickLevel').textContent = clickUpgrades.reduce((s, u) => s + u.bought, 0);
+            document.getElementById('statPassiveLevel').textContent = passiveUpgrades.reduce((s, u) => s + u.bought, 0);
+            document.getElementById('clickValueInfo').textContent = clickValue.toFixed(6);
+            document.getElementById('passiveValueInfo').textContent = passiveValue.toFixed(8);
+            renderClickUpgrades();
+            renderPassiveUpgrades();
+            updateCoinVisual();
+        }
+
+        function getCurrentPrice(u) { return u.basePrice * Math.pow(u.mult, u.bought); }
+
+        function renderClickUpgrades() {
+            const c = document.getElementById('clickUpgradesList');
+            c.innerHTML = '';
+            clickUpgrades.forEach(u => {
+                const price = getCurrentPrice(u);
+                const can = balance >= price;
+                const el = document.createElement('div');
+                el.className = 'upgrade-item' + (can ? '' : ' disabled');
+                el.innerHTML = `<div class="upgrade-left"><div class="upgrade-name">${u.name} за тап</div><div class="upgrade-effect">Куплено: ${u.bought}</div></div><div class="upgrade-right"><div class="upgrade-cost">${price.toFixed(8)}</div><div class="upgrade-cost-label">MOG</div></div>`;
+                el.onclick = () => buyUpgrade('click', u.id);
+                c.appendChild(el);
+            });
+        }
+
+        function renderPassiveUpgrades() {
+            const c = document.getElementById('passiveUpgradesList');
+            c.innerHTML = '';
+            passiveUpgrades.forEach(u => {
+                const price = getCurrentPrice(u);
+                const can = balance >= price;
+                const el = document.createElement('div');
+                el.className = 'upgrade-item' + (can ? '' : ' disabled');
+                el.innerHTML = `<div class="upgrade-left"><div class="upgrade-name">${u.name} в сек</div><div class="upgrade-effect">Куплено: ${u.bought}</div></div><div class="upgrade-right"><div class="upgrade-cost">${price.toFixed(8)}</div><div class="upgrade-cost-label">MOG</div></div>`;
+                el.onclick = () => buyUpgrade('passive', u.id);
+                c.appendChild(el);
+            });
+        }
+
+        function buyUpgrade(type, id) {
+            const list = type === 'click' ? clickUpgrades : passiveUpgrades;
+            const u = list.find(x => x.id === id);
+            if (!u) return;
+            const price = getCurrentPrice(u);
+            if (balance < price) { tg.HapticFeedback?.notificationOccurred('error'); return; }
+            balance -= price; u.bought += 1;
+            if (type === 'click') clickValue += u.add; else passiveValue += u.add;
+            tg.HapticFeedback?.notificationOccurred('success');
+            updateAllUI(); saveLocalData();
+        }
+
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const s = btn.dataset.screen;
+                document.querySelectorAll('.screen').forEach(x => x.classList.remove('active'));
+                document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
+                document.getElementById('screen-' + s).classList.add('active');
+                btn.classList.add('active');
+                if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+            });
+        });
+
+        function updateProfile() {
+            document.getElementById('profileName').textContent = user.first_name || user.username || 'Игрок';
+            document.getElementById('profileId').textContent = 'ID: ' + user.id;
+        }
+
+        function showPopup(text, amount) {
+            const p = document.getElementById('popup');
+            document.getElementById('popupText').textContent = text;
+            document.getElementById('popupAmount').textContent = amount;
+            p.classList.add('show');
+            setTimeout(() => p.classList.remove('show'), 1500);
+        }
+
+        // =============================================
+        // ===== УРОВНИ МОНЕТЫ =====
+        // =============================================
+        const COIN_LEVELS = [
+            { level: 1, min: 0,       max: 0.001,    img: 'coin1.jpg', name: 'Бронза',  class: 'level-1' },
+            { level: 2, min: 0.001,   max: 1,        img: 'coin2.jpg', name: 'Серебро', class: 'level-2' },
+            { level: 3, min: 1,       max: 1000,     img: 'coin3.jpg', name: 'MTN',     class: 'level-3' },
+            { level: 4, min: 1000,    max: 10000,    img: 'coin4.jpg', name: 'HTN',     class: 'level-4' },
+            { level: 5, min: 10000,   max: Infinity, img: 'coin5.jpg', name: 'Чад',     class: 'level-5' },
+        ];
+        let currentCoinLevel = 1;
+
+        function getCoinLevel(b) {
+            for (const l of COIN_LEVELS) if (b >= l.min && b < l.max) return l;
+            return COIN_LEVELS[COIN_LEVELS.length - 1];
+        }
+
+        function updateCoinVisual() {
+            const lvl = getCoinLevel(balance);
+            const c = document.getElementById('coin');
+            const n = document.getElementById('coinLevelName');
+            if (!c) return;
+            c.innerHTML = `<img src="${lvl.img}" alt="${lvl.name}">`;
+            for (let i = 1; i <= 5; i++) c.classList.remove('level-' + i);
+            c.classList.add(lvl.class);
+            if (n) n.textContent = lvl.name;
+            if (lvl.level !== currentCoinLevel) {
+                currentCoinLevel = lvl.level;
+                tg.HapticFeedback?.notificationOccurred('success');
+                showPopup('🎉 Новый уровень!', lvl.name);
             }
-            console.log('✅ Загружено из localStorage');
-        }
-    }
-
-    // =============================================
-    // ===== ФОРМАТИРОВАНИЕ =====
-    // =============================================
-    function formatBalance(val) {
-        if (val === 0) return '0.000000';
-        if (val < 0.001) return val.toFixed(8);
-        if (val < 1) return val.toFixed(6);
-        if (val < 1000) return val.toFixed(4);
-        return val.toFixed(2);
-    }
-
-    // =============================================
-    // ===== ТАП =====
-    // =============================================
-    coin.addEventListener('click', (e) => {
-        checkTapLimit();
-        if (limitReached) return;
-
-        tapCount++;
-        totalTaps++;
-        balance += clickValue;
-
-        const effect = document.createElement('div');
-        effect.className = 'tap-effect';
-        effect.textContent = '+' + clickValue.toFixed(6);
-        effect.style.left = (e.clientX - 20) + 'px';
-        effect.style.top = (e.clientY - 20) + 'px';
-        document.body.appendChild(effect);
-        setTimeout(() => effect.remove(), 800);
-
-        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-
-        updateAllUI();
-        saveLocalData();
-    });
-
-    // =============================================
-    // ===== ПАССИВНЫЙ ДОХОД =====
-    // =============================================
-    setInterval(() => {
-        if (passiveValue > 0) {
-            balance += passiveValue;
-            updateAllUI();
-            saveLocalData();
-        }
-    }, 1000);
-
-    // =============================================
-    // ===== ОБНОВЛЕНИЕ UI =====
-    // =============================================
-    function updateAllUI() {
-        if (balanceTapEl) balanceTapEl.textContent = formatBalance(balance);
-        if (balanceUpgradesEl) balanceUpgradesEl.textContent = formatBalance(balance);
-
-        const statBalance = document.getElementById('statBalance');
-        const statPassive = document.getElementById('statPassive');
-        const statClick = document.getElementById('statClick');
-        const statTaps = document.getElementById('statTaps');
-        if (statBalance) statBalance.textContent = formatBalance(balance);
-        if (statPassive) statPassive.textContent = passiveValue.toFixed(8);
-        if (statClick) statClick.textContent = clickValue.toFixed(6);
-        if (statTaps) statTaps.textContent = totalTaps.toLocaleString();
-
-        const statClickLevel = document.getElementById('statClickLevel');
-        const statPassiveLevel = document.getElementById('statPassiveLevel');
-        if (statClickLevel) statClickLevel.textContent = clickUpgrades.reduce((s, u) => s + u.bought, 0);
-        if (statPassiveLevel) statPassiveLevel.textContent = passiveUpgrades.reduce((s, u) => s + u.bought, 0);
-
-        if (clickValueInfoEl) clickValueInfoEl.textContent = clickValue.toFixed(6);
-        if (passiveValueInfoEl) passiveValueInfoEl.textContent = passiveValue.toFixed(8);
-
-        renderClickUpgrades();
-        renderPassiveUpgrades();
-    }
-
-    // =============================================
-    // ===== РЕНДЕР УЛУЧШЕНИЙ =====
-    // =============================================
-    function getCurrentPrice(upgrade) {
-        return upgrade.basePrice * Math.pow(upgrade.mult, upgrade.bought);
-    }
-
-    function renderClickUpgrades() {
-        const container = document.getElementById('clickUpgradesList');
-        if (!container) return;
-        container.innerHTML = '';
-        clickUpgrades.forEach(u => {
-            const price = getCurrentPrice(u);
-            const canBuy = balance >= price;
-            const item = document.createElement('div');
-            item.className = 'upgrade-item' + (canBuy ? '' : ' disabled');
-            item.innerHTML = `
-                <div class="upgrade-left">
-                    <div class="upgrade-name">${u.name} за тап</div>
-                    <div class="upgrade-effect">Куплено: ${u.bought}</div>
-                </div>
-                <div class="upgrade-right">
-                    <div class="upgrade-cost">${price.toFixed(8)}</div>
-                    <div class="upgrade-cost-label">MOG</div>
-                </div>
-            `;
-            item.onclick = () => buyUpgrade('click', u.id);
-            container.appendChild(item);
-        });
-    }
-
-    function renderPassiveUpgrades() {
-        const container = document.getElementById('passiveUpgradesList');
-        if (!container) return;
-        container.innerHTML = '';
-        passiveUpgrades.forEach(u => {
-            const price = getCurrentPrice(u);
-            const canBuy = balance >= price;
-            const item = document.createElement('div');
-            item.className = 'upgrade-item' + (canBuy ? '' : ' disabled');
-            item.innerHTML = `
-                <div class="upgrade-left">
-                    <div class="upgrade-name">${u.name} в сек</div>
-                    <div class="upgrade-effect">Куплено: ${u.bought}</div>
-                </div>
-                <div class="upgrade-right">
-                    <div class="upgrade-cost">${price.toFixed(8)}</div>
-                    <div class="upgrade-cost-label">MOG</div>
-                </div>
-            `;
-            item.onclick = () => buyUpgrade('passive', u.id);
-            container.appendChild(item);
-        });
-    }
-
-    // =============================================
-    // ===== ПОКУПКА =====
-    // =============================================
-    function buyUpgrade(type, id) {
-        const list = type === 'click' ? clickUpgrades : passiveUpgrades;
-        const upgrade = list.find(u => u.id === id);
-        if (!upgrade) return;
-
-        const price = getCurrentPrice(upgrade);
-        if (balance < price) {
-            tg.HapticFeedback?.notificationOccurred('error');
-            return;
         }
 
-        balance -= price;
-        upgrade.bought += 1;
-
-        if (type === 'click') clickValue += upgrade.add;
-        else passiveValue += upgrade.add;
-
-        tg.HapticFeedback?.notificationOccurred('success');
-        updateAllUI();
-        saveLocalData();
-    }
-
-    // =============================================
-    // ===== ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ =====
-    // =============================================
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const screen = btn.dataset.screen;
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('screen-' + screen).classList.add('active');
-            btn.classList.add('active');
-            if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
-        });
-    });
-
-    // =============================================
-    // ===== ПРОФИЛЬ =====
-    // =============================================
-    function updateProfile() {
-        const nameEl = document.getElementById('profileName');
-        const idEl = document.getElementById('profileId');
-        if (nameEl) nameEl.textContent = user.first_name || user.username || 'Игрок';
-        if (idEl) idEl.textContent = 'ID: ' + user.id;
-    }
-
-    // =============================================
-    // ===== POPUP =====
-    // =============================================
-    function showPopup(text, amount) {
-        const popup = document.getElementById('popup');
-        document.getElementById('popupText').textContent = text;
-        document.getElementById('popupAmount').textContent = amount;
-        popup.classList.add('show');
-        setTimeout(() => popup.classList.remove('show'), 1500);
-    }
-    
         // =============================================
-        // ===== МИНИ-ИГРА CRASH =====
+        // ===== CRASH ИГРА =====
         // =============================================
-        let crashBet = 0;
-        let crashRunning = false;
-        let crashMultiplier = 1.0;
-        let crashPoint = 0;
-        let crashCrashed = false;
-        let crashInterval = null;
-        let crashHistory = [];
-        let crashCanvasCtx = null;
+        let crashBet = 0, crashRunning = false, crashMultiplier = 1.0, crashPoint = 0, crashCrashed = false, crashInterval = null, crashHistory = [], crashCtx = null;
 
         function openCrash() {
-            if (balance < 0.00001) {
-                showPopup('❌ Нужно минимум 0.00001 MOG', '');
-                return;
-            }
-
-            const modal = document.createElement('div');
-            modal.id = 'crashModal';
-            modal.className = 'crash-modal';
-            modal.innerHTML = `
+            if (balance < 0.00001) { showPopup('❌ Нужно минимум 0.00001 MOG', ''); return; }
+            const m = document.createElement('div');
+            m.id = 'crashModal';
+            m.className = 'crash-modal';
+            m.innerHTML = `
                 <div class="crash-header">
                     <div class="crash-title">🚀 Crash</div>
                     <button class="crash-close" onclick="closeCrash()">✕</button>
                 </div>
-                <div class="crash-mult-box">
-                    <div class="crash-mult" id="crashMult">1.00x</div>
-                </div>
+                <div class="crash-mult-box"><div class="crash-mult" id="crashMult">1.00x</div></div>
                 <canvas id="crashCanvas"></canvas>
                 <div class="crash-panel">
                     <div class="crash-bet-row">
@@ -912,54 +836,41 @@
                     </div>
                     <button id="crashActionBtn" class="crash-action-btn" onclick="toggleCrash()">Сделать ставку</button>
                 </div>
-                <div style="margin-top:12px;font-size:11px;color:#5A5A6A;text-align:center;">
-                    Успей забрать до краша!
-                </div>
-            `;
-            document.body.appendChild(modal);
+                <div style="margin-top:12px;font-size:11px;color:#5A5A6A;text-align:center;">Успей забрать до краша!</div>`;
+            document.body.appendChild(m);
             initCrashCanvas();
         }
 
         function closeCrash() {
             if (crashInterval) clearInterval(crashInterval);
-            crashRunning = false;
-            crashCrashed = false;
-            const modal = document.getElementById('crashModal');
-            if (modal) modal.remove();
+            crashRunning = false; crashCrashed = false;
+            const m = document.getElementById('crashModal');
+            if (m) m.remove();
         }
 
         function setCrashBetMax() {
-            const input = document.getElementById('crashBetInput');
-            if (input) input.value = balance.toFixed(8);
+            document.getElementById('crashBetInput').value = balance.toFixed(8);
         }
 
         function initCrashCanvas() {
-            const canvas = document.getElementById('crashCanvas');
-            if (!canvas) return;
-            canvas.width = canvas.clientWidth * 2;
-            canvas.height = 300;
-            crashCanvasCtx = canvas.getContext('2d');
+            const c = document.getElementById('crashCanvas');
+            if (!c) return;
+            c.width = c.clientWidth * 2;
+            c.height = 300;
+            crashCtx = c.getContext('2d');
             drawCrashGraph();
         }
 
         function drawCrashGraph() {
-            const canvas = document.getElementById('crashCanvas');
-            if (!canvas || !crashCanvasCtx) return;
-            const ctx = crashCanvasCtx;
-            const w = canvas.width;
-            const h = canvas.height;
+            const c = document.getElementById('crashCanvas');
+            if (!c || !crashCtx) return;
+            const ctx = crashCtx, w = c.width, h = c.height;
             ctx.clearRect(0, 0, w, h);
-
             ctx.strokeStyle = 'rgba(255,255,255,0.03)';
-            ctx.lineWidth = 1;
             for (let i = 0; i < 10; i++) {
                 const y = h - (i / 10) * h;
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(w, y);
-                ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
             }
-
             if (crashHistory.length > 1) {
                 ctx.strokeStyle = crashCrashed ? '#FF3B5C' : '#7B2FBE';
                 ctx.lineWidth = 4;
@@ -969,8 +880,7 @@
                 for (let i = 0; i < crashHistory.length; i++) {
                     const x = (i / Math.max(crashHistory.length, 50)) * w;
                     const y = h - Math.min(crashHistory[i] / 10, 1) * h;
-                    if (i === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
                 ctx.stroke();
                 ctx.shadowBlur = 0;
@@ -978,39 +888,21 @@
         }
 
         function toggleCrash() {
-            if (crashRunning) {
-                cashOutCrash();
-            } else {
-                startCrash();
-            }
+            if (crashRunning) cashOutCrash(); else startCrash();
         }
 
         function startCrash() {
-            const betInput = document.getElementById('crashBetInput');
-            const bet = parseFloat(betInput.value);
-
-            if (!bet || bet <= 0) {
-                showPopup('❌ Введи ставку', '');
-                return;
-            }
-            if (bet > balance) {
-                showPopup('❌ Недостаточно средств', '');
-                return;
-            }
-            if (bet < 0.00001) {
-                showPopup('❌ Минимум 0.00001 MOG', '');
-                return;
-            }
+            const bet = parseFloat(document.getElementById('crashBetInput').value);
+            if (!bet || bet <= 0) { showPopup('❌ Введи ставку', ''); return; }
+            if (bet > balance) { showPopup('❌ Недостаточно средств', ''); return; }
+            if (bet < 0.00001) { showPopup('❌ Минимум 0.00001 MOG', ''); return; }
 
             crashBet = bet;
             balance -= bet;
-            updateAllUI();
-            saveLocalData();
+            updateAllUI(); saveLocalData();
 
-            crashRunning = true;
-            crashCrashed = false;
-            crashMultiplier = 1.0;
-            crashHistory = [];
+            crashRunning = true; crashCrashed = false;
+            crashMultiplier = 1.0; crashHistory = [];
             crashPoint = 1.1 + Math.random() * Math.random() * 14;
 
             const btn = document.getElementById('crashActionBtn');
@@ -1019,10 +911,7 @@
             btn.style.color = '#0a0a0f';
 
             const multEl = document.getElementById('crashMult');
-            if (multEl) {
-                multEl.style.color = '#00FF88';
-                multEl.textContent = '1.00x';
-            }
+            if (multEl) { multEl.style.color = '#00FF88'; multEl.textContent = '1.00x'; }
 
             let lastTime = Date.now();
             crashInterval = setInterval(() => {
@@ -1030,13 +919,8 @@
                 const now = Date.now();
                 const delta = (now - lastTime) / 1000;
                 lastTime = now;
-
                 crashMultiplier += 0.05 + (crashMultiplier / 12) * delta;
-
-                if (multEl) {
-                    multEl.textContent = crashMultiplier.toFixed(2) + 'x';
-                }
-
+                if (multEl) multEl.textContent = crashMultiplier.toFixed(2) + 'x';
                 crashHistory.push(crashMultiplier);
                 if (crashHistory.length > 100) crashHistory.shift();
                 drawCrashGraph();
@@ -1045,21 +929,14 @@
                     crashMultiplier = crashPoint;
                     crashCrashed = true;
                     clearInterval(crashInterval);
-
-                    if (multEl) {
-                        multEl.textContent = crashMultiplier.toFixed(2) + 'x';
-                        multEl.style.color = '#FF3B5C';
-                    }
-
-                    const btn = document.getElementById('crashActionBtn');
-                    btn.textContent = '💥 CRASH';
-                    btn.style.background = '#FF3B5C';
-                    btn.style.color = '#fff';
-
+                    if (multEl) { multEl.textContent = crashMultiplier.toFixed(2) + 'x'; multEl.style.color = '#FF3B5C'; }
+                    const b = document.getElementById('crashActionBtn');
+                    b.textContent = '💥 CRASH';
+                    b.style.background = '#FF3B5C';
+                    b.style.color = '#fff';
                     setTimeout(() => {
                         crashRunning = false;
-                        updateAllUI();
-                        saveLocalData();
+                        updateAllUI(); saveLocalData();
                         showPopup('💥 Вы проиграли', '-' + crashBet.toFixed(8) + ' MOG');
                         setTimeout(closeCrash, 1500);
                     }, 800);
@@ -1070,25 +947,17 @@
         function cashOutCrash() {
             if (!crashRunning || crashCrashed) return;
             clearInterval(crashInterval);
-
             const win = crashBet * crashMultiplier;
             balance += win;
-            updateAllUI();
-            saveLocalData();
-
+            updateAllUI(); saveLocalData();
             crashRunning = false;
             showPopup('💰 Выигрыш!', '+' + win.toFixed(8) + ' MOG');
             setTimeout(closeCrash, 1500);
         }
 
-        // =============================================
-        // ===== ПРИВЯЗКА КНОПКИ CRASH =====
-        // =============================================
         document.addEventListener('click', (e) => {
             const card = e.target.closest('[data-game="crash"]');
-            if (card) {
-                openCrash();
-            }
+            if (card) openCrash();
         });
 
         // =============================================
@@ -1101,9 +970,12 @@
         });
 
         window.addEventListener('beforeunload', saveLocalData);
+        window.addEventListener('pagehide', saveLocalData);
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) saveLocalData();
+        });
 
-        // Сохраняем каждые 5 секунд
-        setInterval(saveLocalData, 5000);
+        setInterval(saveLocalData, 3000);
     </script>
 </body>
 </html>
