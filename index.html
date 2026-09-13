@@ -437,7 +437,6 @@
 <body>
     <div id="app">
 
-        <!-- ЭКРАН 1: ИГРА (ТАП) -->
         <div id="screen-tap" class="screen active">
             <div class="top-balance">
                 <div class="balance-box">
@@ -451,16 +450,13 @@
             <div class="hint">Тапай по жабе, покупай улучшения</div>
         </div>
 
-        <!-- ЭКРАН 2: ПРОФИЛЬ -->
         <div id="screen-profile" class="screen">
             <div class="screen-title">👤 Профиль</div>
-
             <div class="profile-card">
                 <div class="profile-avatar" id="profileAvatar">🐸</div>
                 <div class="profile-name" id="profileName">Игрок</div>
                 <div class="profile-id" id="profileId">ID: 123456</div>
             </div>
-
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon">💰</div>
@@ -483,7 +479,6 @@
                     <div class="stat-value" id="statTaps">0</div>
                 </div>
             </div>
-
             <div class="section">
                 <div class="section-header">
                     <div class="section-title">📊 Прогресс</div>
@@ -509,17 +504,14 @@
             </div>
         </div>
 
-        <!-- ЭКРАН 3: УЛУЧШЕНИЯ -->
         <div id="screen-upgrades" class="screen">
             <div class="screen-title">⚡ Улучшения</div>
-
             <div class="top-balance">
                 <div class="balance-box">
                     <div class="balance-label">Mog Coin</div>
                     <div class="balance-value" id="balanceUpgrades">0.000000</div>
                 </div>
             </div>
-
             <div class="section">
                 <div class="section-header">
                     <div class="section-title">👆 Улучшение клика</div>
@@ -527,7 +519,6 @@
                 </div>
                 <div id="clickUpgradesList"></div>
             </div>
-
             <div class="section">
                 <div class="section-header">
                     <div class="section-title">⏱ Доход в секунду</div>
@@ -537,24 +528,20 @@
             </div>
         </div>
 
-        <!-- ЭКРАН 4: ИГРЫ -->
         <div id="screen-games" class="screen">
             <div class="screen-title">🎮 Игры</div>
-
             <div class="game-card" data-game="crash">
                 <div class="game-icon">🚀</div>
                 <div class="game-title">Crash</div>
                 <div class="game-desc">Ставь Mog Coin, забирай выигрыш</div>
                 <div class="game-play">Играть</div>
             </div>
-
             <div class="game-card">
                 <div class="game-icon">🎡</div>
                 <div class="game-title">Wheel</div>
                 <div class="game-desc">Крути колесо и выигрывай</div>
                 <div class="game-soon">Скоро</div>
             </div>
-
             <div class="game-card">
                 <div class="game-icon">🎲</div>
                 <div class="game-title">Dice</div>
@@ -563,7 +550,6 @@
             </div>
         </div>
 
-        <!-- НИЖНЯЯ НАВИГАЦИЯ -->
         <div class="bottom-nav">
             <button class="nav-btn active" data-screen="tap">
                 <span class="nav-icon">🐸</span>
@@ -583,7 +569,6 @@
             </button>
         </div>
 
-        <!-- POPUP -->
         <div class="popup" id="popup">
             <div class="popup-text" id="popupText"></div>
             <div class="popup-amount" id="popupAmount"></div>
@@ -594,7 +579,6 @@
     // =============================================
     // ===== НАСТРОЙКИ =====
     // =============================================
-    const API_URL = 'https://mog-coin-bot.onrender.com'; // ЗАМЕНИ на свой URL Render
     const MAX_TAPS_PER_HOUR = 15000;
     const BASE_CLICK_VALUE = 0.000001;
 
@@ -656,55 +640,49 @@
     const coin = document.getElementById('coin');
 
     // =============================================
-    // ===== СЕРВЕР =====
+    // ===== LOCALSTORAGE (СОХРАНЕНИЕ) =====
     // =============================================
-    async function loadFromServer() {
+    function getLocalData() {
         try {
-            const resp = await fetch(`${API_URL}/balance/${user.id}`);
-            const data = await resp.json();
-            if (data && typeof data.balance === 'number') {
-                balance = data.balance;
-                if (data.clickValue) clickValue = data.clickValue;
-                if (data.passiveValue) passiveValue = data.passiveValue;
-                if (data.totalTaps) totalTaps = data.totalTaps;
-                if (data.clickUpgrades) {
-                    data.clickUpgrades.forEach(u => {
-                        const item = clickUpgrades.find(x => x.id === u.id);
-                        if (item) item.bought = u.bought;
-                    });
-                }
-                if (data.passiveUpgrades) {
-                    data.passiveUpgrades.forEach(u => {
-                        const item = passiveUpgrades.find(x => x.id === u.id);
-                        if (item) item.bought = u.bought;
-                    });
-                }
-            }
-        } catch (e) {
-            console.log('Сервер недоступен, работаем локально');
-        }
-        updateAllUI();
+            const data = localStorage.getItem('mog_coin_' + user.id);
+            return data ? JSON.parse(data) : null;
+        } catch (e) { return null; }
     }
 
-    let saveTimeout = null;
-    function saveToServer() {
-        if (saveTimeout) clearTimeout(saveTimeout);
-        saveTimeout = setTimeout(async () => {
-            try {
-                await fetch(`${API_URL}/balance/${user.id}`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        balance: balance,
-                        clickValue: clickValue,
-                        passiveValue: passiveValue,
-                        totalTaps: totalTaps,
-                        clickUpgrades: clickUpgrades.map(u => ({ id: u.id, bought: u.bought })),
-                        passiveUpgrades: passiveUpgrades.map(u => ({ id: u.id, bought: u.bought }))
-                    })
+    function saveLocalData() {
+        try {
+            localStorage.setItem('mog_coin_' + user.id, JSON.stringify({
+                balance: balance,
+                clickValue: clickValue,
+                passiveValue: passiveValue,
+                totalTaps: totalTaps,
+                clickUpgrades: clickUpgrades.map(u => ({ id: u.id, bought: u.bought })),
+                passiveUpgrades: passiveUpgrades.map(u => ({ id: u.id, bought: u.bought }))
+            }));
+        } catch (e) {}
+    }
+
+    function loadFromLocal() {
+        const data = getLocalData();
+        if (data) {
+            balance = data.balance || 0;
+            clickValue = data.clickValue || BASE_CLICK_VALUE;
+            passiveValue = data.passiveValue || 0;
+            totalTaps = data.totalTaps || 0;
+            if (data.clickUpgrades) {
+                data.clickUpgrades.forEach(u => {
+                    const item = clickUpgrades.find(x => x.id === u.id);
+                    if (item) item.bought = u.bought;
                 });
-            } catch (e) {}
-        }, 800);
+            }
+            if (data.passiveUpgrades) {
+                data.passiveUpgrades.forEach(u => {
+                    const item = passiveUpgrades.find(x => x.id === u.id);
+                    if (item) item.bought = u.bought;
+                });
+            }
+            console.log('✅ Загружено из localStorage');
+        }
     }
 
     // =============================================
@@ -740,7 +718,7 @@
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 
         updateAllUI();
-        saveToServer();
+        saveLocalData();
     });
 
     // =============================================
@@ -750,7 +728,7 @@
         if (passiveValue > 0) {
             balance += passiveValue;
             updateAllUI();
-            saveToServer();
+            saveLocalData();
         }
     }, 1000);
 
@@ -859,7 +837,7 @@
 
         tg.HapticFeedback?.notificationOccurred('success');
         updateAllUI();
-        saveToServer();
+        saveLocalData();
     }
 
     // =============================================
@@ -972,7 +950,6 @@
             const h = canvas.height;
             ctx.clearRect(0, 0, w, h);
 
-            // Сетка
             ctx.strokeStyle = 'rgba(255,255,255,0.03)';
             ctx.lineWidth = 1;
             for (let i = 0; i < 10; i++) {
@@ -983,7 +960,6 @@
                 ctx.stroke();
             }
 
-            // График
             if (crashHistory.length > 1) {
                 ctx.strokeStyle = crashCrashed ? '#FF3B5C' : '#7B2FBE';
                 ctx.lineWidth = 4;
@@ -1029,18 +1005,24 @@
             crashBet = bet;
             balance -= bet;
             updateAllUI();
+            saveLocalData();
 
             crashRunning = true;
             crashCrashed = false;
             crashMultiplier = 1.0;
             crashHistory = [];
-            // Краш от 1.1x до 15x, с шансом на большой
             crashPoint = 1.1 + Math.random() * Math.random() * 14;
 
             const btn = document.getElementById('crashActionBtn');
             btn.textContent = '💰 Забрать';
             btn.style.background = '#00FF88';
             btn.style.color = '#0a0a0f';
+
+            const multEl = document.getElementById('crashMult');
+            if (multEl) {
+                multEl.style.color = '#00FF88';
+                multEl.textContent = '1.00x';
+            }
 
             let lastTime = Date.now();
             crashInterval = setInterval(() => {
@@ -1051,7 +1033,6 @@
 
                 crashMultiplier += 0.05 + (crashMultiplier / 12) * delta;
 
-                const multEl = document.getElementById('crashMult');
                 if (multEl) {
                     multEl.textContent = crashMultiplier.toFixed(2) + 'x';
                 }
@@ -1065,7 +1046,6 @@
                     crashCrashed = true;
                     clearInterval(crashInterval);
 
-                    const multEl = document.getElementById('crashMult');
                     if (multEl) {
                         multEl.textContent = crashMultiplier.toFixed(2) + 'x';
                         multEl.style.color = '#FF3B5C';
@@ -1079,6 +1059,7 @@
                     setTimeout(() => {
                         crashRunning = false;
                         updateAllUI();
+                        saveLocalData();
                         showPopup('💥 Вы проиграли', '-' + crashBet.toFixed(8) + ' MOG');
                         setTimeout(closeCrash, 1500);
                     }, 800);
@@ -1093,7 +1074,7 @@
             const win = crashBet * crashMultiplier;
             balance += win;
             updateAllUI();
-            saveToServer();
+            saveLocalData();
 
             crashRunning = false;
             showPopup('💰 Выигрыш!', '+' + win.toFixed(8) + ' MOG');
@@ -1115,10 +1096,14 @@
         // =============================================
         document.addEventListener('DOMContentLoaded', () => {
             updateProfile();
-            loadFromServer();
+            loadFromLocal();
+            updateAllUI();
         });
 
-        window.addEventListener('beforeunload', saveToServer);
+        window.addEventListener('beforeunload', saveLocalData);
+
+        // Сохраняем каждые 5 секунд
+        setInterval(saveLocalData, 5000);
     </script>
 </body>
 </html>
