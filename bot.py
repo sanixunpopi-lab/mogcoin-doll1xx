@@ -9,7 +9,7 @@ from aiogram.filters import Command
 import threading
 
 BOT_TOKEN = "8805424592:AAHVjlM6tuZ7pDT-1bpZ7yZDjfSxnDlRQl0"
-WEBAPP_URL = "https://sanixunpopi-lab.github.io/mog-coin/"
+WEBAPP_URL = "https://sanixunpopi-lab.github.io/mogcoin-doll1xx/"
 ADMIN_ID = 8698280423
 
 logging.basicConfig(level=logging.INFO)
